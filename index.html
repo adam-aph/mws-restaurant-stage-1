@@ -11,9 +11,16 @@
 
 <body>
   <header>
-    <nav>
-      <h1><a href="/">Restaurant Reviews</a></h1>
-    </nav>
+    <div>
+      <nav>
+        <h1><a href="/">Restaurant Reviews</a></h1>
+      </nav>
+      <a id="menu" class="header__menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMin meet">
+          <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"/>
+        </svg>
+      </a>
+    </div>
   </header>
 
   <main id="maincontent">
@@ -38,6 +45,23 @@
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
 
+  <script>
+      /*
+       * Open the drawer when the menu ison is clicked.
+       */
+      var menu = document.querySelector('#menu');
+      var main = document.querySelector('main');
+      var drawer = document.querySelector('.filter-options');
+
+      menu.addEventListener('click', function(e) {
+        drawer.classList.toggle('open');
+        e.stopPropagation();
+      });
+      drawer.addEventListener('change', function() {
+        drawer.classList.remove('open');
+      });
+
+  </script>
 
   <footer id="footer">
     Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
