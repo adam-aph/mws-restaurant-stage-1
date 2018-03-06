@@ -150,7 +150,20 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    var mq = window.matchMedia('screen and (max-width: 600px), screen and (max-device-width: 480px)');
+    if(mq.matches) {
+      return (`/img2/${restaurant.id}` + `-300_small.jpg`);
+    } else {
+      return (`/img/${restaurant.id}` + `.jpg`);      
+    }
+    /* return (`/img/${restaurant.photograph}`);*/
+  }
+
+  /**
+   * Restaurant small image URL.
+   */
+  static imageSmallUrlForRestaurant(restaurant) {
+    return (`/img2/${restaurant.id}` + `-300_small.jpg`);
   }
 
   /**
