@@ -39,7 +39,7 @@ fetchRestaurantFromURL = (callback) => {
         console.error(error);
         return;
       }
-      fillRestaurantHTML();
+      fillRestaurantHTML(); 
       callback(null, restaurant)
     });
   }
@@ -57,7 +57,9 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.srcset = DBHelper.imageSrcSetUrlForRestaurant(restaurant); 
+  image.sizes = DBHelper.imageSizesUrlForRestaurant(restaurant); 
+  image.src = DBHelper.imageSrcUrlForRestaurant(restaurant); 
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;

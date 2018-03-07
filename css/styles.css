@@ -79,7 +79,7 @@ nav h1 a {
   text-transform: uppercase;
 }
 #breadcrumb {
-    padding: 10px 40px 16px;
+    padding: 10px 40px 16px 10px; 
     list-style: none;
     background-color: #eee;
     font-size: 17px;
@@ -317,7 +317,7 @@ nav h1 a {
   }
 }
 
-@media screen and (max-width: 600px), screen and (max-device-width: 480px) { 
+@media screen and (max-width: 600px) { 
   .filter-options {
     z-index: 10;
     background-color: #3397DB;
@@ -368,12 +368,12 @@ nav h1 a {
     display: inline-block;
     width: 100%;
   }  
-.inside #restaurant-img {
-  height: auto;
-  width: 250px; 
+  .inside #restaurant-img {
+    height: auto;
+    width: 350px; 
   }
-.inside #restaurant-cuisine {
-  width: 250px; 
+  .inside #restaurant-cuisine {
+    width: 350px; 
   }
 }
 
@@ -381,4 +381,4 @@ nav h1 a {
   nav h1 a {
     font-size: 8pt;
   }
-}
+  

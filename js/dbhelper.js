@@ -147,22 +147,23 @@ class DBHelper {
   }
 
   /**
-   * Restaurant image URL.
+   * Restaurant SrcSet image URL.
    */
-  static imageUrlForRestaurant(restaurant) {
-    var mq = window.matchMedia('screen and (max-width: 600px), screen and (max-device-width: 480px)');
-    if(mq.matches) {  
-      return (`/img2/${restaurant.id}` + `-300_small.jpg`);
-    } else {
-      return (`/img/${restaurant.id}` + `.jpg`);      
-    }
-    /* return (`/img/${restaurant.photograph}`);*/
+  static imageSrcSetUrlForRestaurant(restaurant) {
+      return (`/img2/${restaurant.id}` + `-300_small.jpg 300w, ` + `/img/${restaurant.id}` + `.jpg 600w`);
+  }
+
+ /**
+   * Restaurant Sizes image URL.
+   */
+  static imageSizesUrlForRestaurant(restaurant) {
+      return (`(max-width: 400px) 300px, 600px`);
   }
 
   /**
-   * Restaurant small image URL.
+   * Restaurant Src image URL.
    */
-  static imageSmallUrlForRestaurant(restaurant) {
+  static imageSrcUrlForRestaurant(restaurant) {
     return (`/img2/${restaurant.id}` + `-300_small.jpg`);
   }
 
