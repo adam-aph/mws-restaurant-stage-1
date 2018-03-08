@@ -168,6 +168,13 @@ class DBHelper {
   }
 
   /**
+   * Restaurant Alt image description.
+   */
+  static imageAltDescForRestaurant(restaurant) {
+    return (`Restaurant: ${restaurant.name} of ${restaurant.cuisine_type} cuisine type`);
+  }
+
+  /**
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {

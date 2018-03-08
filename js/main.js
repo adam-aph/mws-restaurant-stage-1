@@ -80,6 +80,13 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
+  // Remove a TAB to map
+  /* google.maps.event.addListener(self.map, "tilesloaded", function(){
+      [].slice.apply(document.querySelectorAll('#map a')).forEach(function(item) {
+          item.setAttribute('tabindex','-1');
+      });
+  });*/
+
   updateRestaurants();
 }
 
@@ -143,6 +150,7 @@ createRestaurantHTML = (restaurant) => {
   image.srcset = DBHelper.imageSrcSetUrlForRestaurant(restaurant); 
   image.sizes = DBHelper.imageSizesUrlForRestaurant(restaurant); 
   image.src = DBHelper.imageSrcUrlForRestaurant(restaurant); 
+  image.alt = DBHelper.imageAltDescForRestaurant(restaurant);
   li.append(image);
 
   const name = document.createElement('h1');
@@ -178,3 +186,4 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
+

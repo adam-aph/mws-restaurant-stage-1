@@ -16,6 +16,11 @@ window.initMap = () => {
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      // Remove a TAB to map
+      /* google.maps.event.addListener(self.map, "tilesloaded", function(){
+        [].slice.apply(document.querySelectorAll('#map a')).forEach(function(item) {
+          item.setAttribute('tabindex','-1');
+      });*/
     }
   });
 }
@@ -60,6 +65,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.srcset = DBHelper.imageSrcSetUrlForRestaurant(restaurant); 
   image.sizes = DBHelper.imageSizesUrlForRestaurant(restaurant); 
   image.src = DBHelper.imageSrcUrlForRestaurant(restaurant); 
+  image.alt = DBHelper.imageAltDescForRestaurant(restaurant);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
