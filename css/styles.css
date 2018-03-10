@@ -78,6 +78,12 @@ nav h1 a {
   font-weight: 200;
   text-transform: uppercase;
 }
+#neighborhoods-select:focus {
+  outline: 2px solid red;
+}
+#cuisines-select:focus {
+  outline: 2px solid red;
+}
 #breadcrumb {
     padding: 10px 40px 16px 10px; 
     list-style: none;
@@ -190,7 +196,6 @@ nav h1 a {
 }
 #restaurants-list li a {
   background-color: orange;
-  border-bottom: 3px solid #eee;
   color: #fff;
   display: inline-block;
   font-size: 10pt;
@@ -199,6 +204,9 @@ nav h1 a {
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
+}
+#restaurants-list li a:focus {
+  outline: 2px solid red;
 }
 
 /* ====================== Restaurant Details ====================== */

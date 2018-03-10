@@ -11,11 +11,11 @@
 
 <body>
   <header>
-    <div>
+    <div id="headmenu">
       <nav>
         <h1><a href="/">Restaurant Reviews</a></h1>
       </nav>
-      <a id="menu" class="header__menu" tabindex="0">
+      <a id="menu" class="header__menu" tabindex="-1" aria-hidden="true" aria-label="header menu">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMin meet">
           <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"/>
         </svg>
@@ -25,15 +25,17 @@
 
   <main id="maincontent">
     <section id="map-container">
-      <div id="map" aria-labelledby="google-map" tabindex="-1"></div>
+      <div id="map" aria-label="google map" tabindex="-1" aria-hidden="true"></div>
     </section>
     <section>
       <div class="filter-options">
         <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-labelledby="neighborhoods-select" tabindex="0">
+        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" role="combobox" 
+                aria-hidden="false" aria-label="neighborhoods selector">
           <option value="all">All Neighborhoods</option>
         </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-labelledby="cuisines-select" tabindex="0">
+        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" role="combobox"
+                aria-hidden="false" aria-label="cuisines selector">
           <option value="all">All Cuisines</option>
         </select>
       </div>
@@ -50,15 +52,39 @@
        * Open the drawer when the menu ison is clicked.
        */
       var menu = document.querySelector('#menu');
+      var menuStyle = window.getComputedStyle(menu);
       var main = document.querySelector('main');
       var drawer = document.querySelector('.filter-options');
+      var combo1 = document.querySelector('#neighborhoods-select');
+      var combo2 = document.querySelector('#cuisines-select');
+
+      toggleTabIndex = () => {
+        if (!(menuStyle.getPropertyValue('display') === 'block') || drawer.classList.contains('open')) {
+          combo1.setAttribute("tabindex", "0");
+          combo2.setAttribute("tabindex", "0");          
+        } else {
+          combo1.setAttribute("tabindex", "-1");
+          combo2.setAttribute("tabindex", "-1");
+        }
+      }
 
       menu.addEventListener('click', function(e) {
-        drawer.classList.toggle('open');
+        drawer.classList.toggle('open'); 
         e.stopPropagation();
       });
       drawer.addEventListener('change', function() {
         drawer.classList.remove('open');
+      });
+
+      toggleTabIndex();
+
+      var drawerObserver = new MutationObserver(function(mutations){
+          toggleTabIndex();
+      });
+      drawerObserver.observe(drawer, {attributes: true});
+
+      window.addEventListener('resize', function(event){
+        toggleTabIndex();
       });
 
   </script>

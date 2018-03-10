@@ -35,6 +35,8 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
     const option = document.createElement('option');
     option.innerHTML = neighborhood;
     option.value = neighborhood;
+    option.setAttribute("tabindex", "-1");
+    option.setAttribute("role", "option");
     select.append(option);
   });
 }
@@ -63,6 +65,8 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
     const option = document.createElement('option');
     option.innerHTML = cuisine;
     option.value = cuisine;
+    option.setAttribute("tabindex", "-1"); 
+    option.setAttribute("role", "option");
     select.append(option);
   });
 }
@@ -80,12 +84,14 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
-  // Remove a TAB to map
-  /* google.maps.event.addListener(self.map, "tilesloaded", function(){
-      [].slice.apply(document.querySelectorAll('#map a')).forEach(function(item) {
+  // Remove focus for the map
+  self.map.addListener("tilesloaded", function(){
+      var anchors = document.querySelectorAll('#map a');
+
+      [].forEach.call(anchors, function(item) {
           item.setAttribute('tabindex','-1');
       });
-  });*/
+  });
 
   updateRestaurants();
 }
@@ -168,6 +174,8 @@ createRestaurantHTML = (restaurant) => {
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
+  more.setAttribute("aria-label", "details for restaurant: " + restaurant.name);
+  more.setAttribute("tabindex", "0");  
   li.append(more)
 
   return li

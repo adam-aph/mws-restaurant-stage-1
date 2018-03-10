@@ -16,11 +16,14 @@ window.initMap = () => {
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-      // Remove a TAB to map
-      /* google.maps.event.addListener(self.map, "tilesloaded", function(){
-        [].slice.apply(document.querySelectorAll('#map a')).forEach(function(item) {
-          item.setAttribute('tabindex','-1');
-      });*/
+      // Remove focus for the map
+      self.map.addListener("tilesloaded", function(){
+          var anchors = document.querySelectorAll('#map a');
+
+          [].forEach.call(anchors, function(item) {
+              item.setAttribute('tabindex','-1');
+          });
+      });
     }
   });
 }
