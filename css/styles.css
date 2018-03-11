@@ -48,7 +48,7 @@ article, aside, canvas, details, figcaption, figure, footer, hgroup, menu, nav, 
   min-height: 100%;
 }
 #footer {
-  background-color: #444;
+  background-color: darkblue;
   color: #aaa;
   font-size: 8pt;
   letter-spacing: 1px;
@@ -107,7 +107,7 @@ nav h1 a {
 
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
+    color: darkblue;
     text-decoration: none;
 }
 
@@ -181,7 +181,7 @@ nav h1 a {
   min-width: 100%;
 }
 #restaurants-list li h1 {
-  color: #f18200;
+  color: purple;
   font-family: Arial,sans-serif;
   font-size: 14pt;
   font-weight: 200;
@@ -195,7 +195,7 @@ nav h1 a {
   font-size: 11pt;
 }
 #restaurants-list li a {
-  background-color: orange;
+  background-color: purple;
   color: #fff;
   display: inline-block;
   font-size: 10pt;
@@ -235,7 +235,7 @@ nav h1 a {
   background-color: #ccc;
 }
 .inside #restaurant-name {
-  background-color: #3397DB;
+  background-color: darkblue;
   color: white;
   vertical-align: middle;
   width: 100%;
@@ -287,7 +287,7 @@ nav h1 a {
 #reviews-container {
 }
 #reviews-container h2 {
-  color: #f58500;
+  color: darkred;
   font-size: 18pt;
   font-weight: 300;
   letter-spacing: -1px;
