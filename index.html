@@ -13,7 +13,7 @@
   <header>
     <div id="headmenu">
       <nav>
-        <h1><a href="/">Restaurant Reviews</a></h1>
+        <h1><a id="headref" href="/">Restaurant Reviews</a></h1>
       </nav>
       <a id="menu" class="header__menu" tabindex="-1" aria-hidden="true" aria-label="header menu">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMin meet">
@@ -87,6 +87,32 @@
         toggleTabIndex();
       });
 
+      var prevfocus = document.querySelector('#headref');
+      var nextFocus = document.querySelector('#neighborhoods-select');
+
+      prevfocus.onkeydown = function(event) {
+          if (event.keyCode == 9 ) {  // TAB
+            event.preventDefault();
+            nextFocus.focus(); 
+            return false;
+          }
+        return true;
+      };
+      nextFocus.onkeydown = function(event) {
+          if (event.keyCode == 9 && event.shiftKey) {  // Shift+TAB
+            event.preventDefault();
+            prevfocus.focus(); 
+            return false;
+          }
+        return true;
+      };
+
+      if ('serviceWorker' in navigator) {
+        // Recommended to register onLoad
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', {scope: './'});
+        });
+      }
   </script>
 
   <footer id="footer">
