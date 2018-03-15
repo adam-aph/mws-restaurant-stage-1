@@ -180,7 +180,7 @@ nav h1 a {
   min-height: 248px;
   min-width: 100%;
 }
-#restaurants-list li h1 {
+#restaurants-list li h3 {
   color: purple;
   font-family: Arial,sans-serif;
   font-size: 14pt;
@@ -281,12 +281,12 @@ nav h1 a {
   display: flex;
   justify-content: center;
 }
-#restaurant-container h1 {
+#restaurant-container h3 {
   font-size: 18pt;
 }
 #reviews-container {
 }
-#reviews-container h2 {
+#reviews-container h4 {
   color: darkred;
   font-size: 18pt;
   font-weight: 300;
@@ -363,13 +363,13 @@ nav h1 a {
   nav h1 a {
     font-size: 3.0vw;
   }
-  #restaurant-container h1 {
+  #restaurant-container h3 {
     font-size: 12pt;
   }
   #restaurant-name {
     font-size: 12pt;
   }
-  #reviews-container h2 {
+  #reviews-container h4 {
     font-size: 12pt;
   }
   #restaurant-contents {

@@ -58,9 +58,11 @@ fetchRestaurantFromURL = (callback) => {
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
+  name.setAttribute("tabindex", "0");
   name.innerHTML = restaurant.name;
 
   const address = document.getElementById('restaurant-address');
+  address.setAttribute("tabindex", "0");
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
@@ -86,6 +88,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
+  hours.setAttribute("tabindex", "0");
+
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -106,7 +110,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
+  const title = document.createElement('h4');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
@@ -128,6 +132,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  li.setAttribute("tabindex", "0");
+
   const name = document.createElement('p');
   name.innerHTML = review.name;
   li.appendChild(name);
@@ -152,6 +158,9 @@ createReviewHTML = (review) => {
  */
 fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
+  breadcrumb.setAttribute("aria-label", "breadcrumb");
+  breadcrumb.setAttribute("role", "navigation");
+ 
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);

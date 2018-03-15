@@ -25,7 +25,7 @@
 
   <main id="maincontent">
     <section id="map-container">
-      <div id="map" aria-label="google map" tabindex="-1" aria-hidden="true"></div>
+      <div id="map" role="application" aria-label="google map" tabindex="-1" aria-hidden="true"></div>
     </section>
     <section>
       <div class="filter-options">
@@ -106,6 +106,7 @@
           }
         return true;
       };
+
 
       if ('serviceWorker' in navigator) {
         // Recommended to register onLoad

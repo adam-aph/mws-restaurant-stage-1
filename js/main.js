@@ -159,8 +159,9 @@ createRestaurantHTML = (restaurant) => {
   image.alt = DBHelper.imageAltDescForRestaurant(restaurant);
   li.append(image);
 
-  const name = document.createElement('h1');
+  const name = document.createElement('h3');
   name.innerHTML = restaurant.name;
+  name.setAttribute("tabindex", "0");
   li.append(name);
 
   const neighborhood = document.createElement('p');
