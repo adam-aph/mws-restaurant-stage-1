@@ -5,13 +5,16 @@ var name = 'restaurants-simple-cache-v2',
       './restaurant.html',
       './sw.js',
       './css/styles.css',
-      './data/restaurants.json',
       './js/dbhelpers.js',
       './js/main.js',
+      './js/IDBcontroller.js',      
       './js/restaurant_info.js'
     ];
 
+
 self.addEventListener('install', function(event) {
+  openDatabase();
+
   event.waitUntil(
     caches.open(name).then(function(cache) {
       return cache.addAll(filesToCache);
@@ -46,12 +49,33 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
+  var idbType = false;
+  if (requestUrl.pathname.indexOf('/restaurants') != -1) {
+    idbType = true;
+    getDBCachedMessage(requestUrl.pathname, function(response) { // yay
+
+      if (response != null) {
+        event.respondWith(response);
+        return;
+      } 
+    });
+  }
+
   event.respondWith(
     caches.open(name).then(function(cache) {
       return cache.match(event.request).then(function (response) {
+
         return response || fetch(event.request).then(function(response) {
-          cache.put(event.request, response.clone());
+
+          if (idbType) {
+            putDBCachedMessage(requestUrl.pathname, response.clone());
+
+          } else {
+            cache.put(event.request, response.clone());
+
+          }
           return response;
+
         }).catch(function(e) {
             console.log(e);
         });
@@ -80,3 +104,58 @@ function servePhoto(request) {
     });
   });
 }
+
+// ===================================== indexedDB ================================
+var dbName = 'restaurants-simple-idb'
+var objStoreName = 'mws-restaurant-calls'
+var idbDatabase;
+
+
+function openDatabase() {
+
+  var indexedDBOpenRequest = indexedDB.open(dbName, 1);
+
+  indexedDBOpenRequest.onerror = function(error) {
+    console.error('IndexedDB error:', error);
+  };
+
+  indexedDBOpenRequest.onupgradeneeded = function() {
+    this.result.createObjectStore(objStoreName, {keyPath: 'url'});
+  };
+
+  indexedDBOpenRequest.onsuccess = function() {
+    idbDatabase = this.result;
+  };
+};
+
+function getObjectStore() {
+  return idbDatabase.transaction(objStoreName, 'readwrite').objectStore(objStoreName);
+};
+
+function getDBCachedMessage(requestUrl, yayHdlr) {
+
+  var getRequest = getObjectStore().get(requestUrl);
+
+  getRequest.onsuccess = function(e) {
+      var item = e.target.result;
+
+      if (item != null) {
+
+        yayHdlr(item.data);
+      } else {
+        yayHdlr(null);
+      }
+  };
+};
+
+function putDBCachedMessage(requestUrl, response) {
+
+  console.log('db-put1: '+ response);
+  var rData = JSON.stringify(response);
+  console.log('db-put2: '+ rData);
+
+  getObjectStore().put({
+    url: requestUrl,
+    data: rData
+  });
+};
