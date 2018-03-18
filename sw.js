@@ -54,24 +54,19 @@ self.addEventListener('fetch', function(event) {
   }
 
   if (requestUrl.pathname.indexOf('/restaurants') != -1) {
-    getDBCachedMessage(requestUrl.pathname, function(respUno) { // yay
 
-      if (respUno != null) {
-        event.respondWith(respUno);
+    event.respondWith( getDBCachedMessage(requestUrl.pathname).then(function(resp) {
 
-      } else {
+        return resp || fetch(event.request).then(function(respScnd) {
 
-        event.respondWith(
-          fetch(event.request).then(function(respScnd) {
             putDBCachedMessage(requestUrl.pathname, respScnd.clone());
             return respScnd;
 
-          }).catch(function(e) {
+        }).catch(function(e) {
             console.log(e);
-          })
-        );
-      }
-    });
+        });
+      })
+    );
 
     return;
   }
@@ -141,29 +136,32 @@ function getObjectStore() {
   return idbDatabase.transaction(objStoreName, 'readwrite').objectStore(objStoreName);
 };
 
-function getDBCachedMessage(requestUrl, yayHdlr) {
+function getDBCachedMessage(requestUrl) {
 
   var getRequest = getObjectStore().get(requestUrl);
 
-  getRequest.onsuccess = function(e) {
+  return new Promise((resolve, reject) => {
+    
+    getRequest.onsuccess = function(e) {
       var item = e.target.result;
 
       if (item != null) {
 
-        yayHdlr( new Response(JSON.stringify(item.data), {
+        resolve( new Response(JSON.stringify(item.data), {
           headers: {
             'content-type': 'application/json'
           }
         }));
 
       } else {
-        yayHdlr(null);
+        resolve(null);
       }
-  };
+    };
 
-  getRequest.onerror = function(e) {
-    yayHdlr(null);
-  };
+    getRequest.onerror = function(e) {
+      reject(null);
+    };
+  });
 };
 
 function putDBCachedMessage(requestUrl, response) {
