@@ -13,7 +13,11 @@ var name = 'restaurants-simple-cache-v2',
 
 
 self.addEventListener('install', function(event) {
-  openDatabase();
+
+  event.waitUntil(openDatabase(function() {
+    return Promise.resolve(true).then();
+    })
+  );
 
   event.waitUntil(
     caches.open(name).then(function(cache) {
@@ -49,16 +53,27 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
-  var idbType = false;
   if (requestUrl.pathname.indexOf('/restaurants') != -1) {
-    idbType = true;
-    getDBCachedMessage(requestUrl.pathname, function(response) { // yay
+    getDBCachedMessage(requestUrl.pathname, function(respUno) { // yay
 
-      if (response != null) {
-        event.respondWith(response);
-        return;
-      } 
+      if (respUno != null) {
+        event.respondWith(respUno);
+
+      } else {
+
+        event.respondWith(
+          fetch(event.request).then(function(respScnd) {
+            putDBCachedMessage(requestUrl.pathname, respScnd.clone());
+            return respScnd;
+
+          }).catch(function(e) {
+            console.log(e);
+          })
+        );
+      }
     });
+
+    return;
   }
 
   event.respondWith(
@@ -66,14 +81,7 @@ self.addEventListener('fetch', function(event) {
       return cache.match(event.request).then(function (response) {
 
         return response || fetch(event.request).then(function(response) {
-
-          if (idbType) {
-            putDBCachedMessage(requestUrl.pathname, response.clone());
-
-          } else {
-            cache.put(event.request, response.clone());
-
-          }
+          cache.put(event.request, response.clone());
           return response;
 
         }).catch(function(e) {
@@ -111,7 +119,7 @@ var objStoreName = 'mws-restaurant-calls'
 var idbDatabase;
 
 
-function openDatabase() {
+function openDatabase(yayHdlr) {
 
   var indexedDBOpenRequest = indexedDB.open(dbName, 1);
 
@@ -125,6 +133,7 @@ function openDatabase() {
 
   indexedDBOpenRequest.onsuccess = function() {
     idbDatabase = this.result;
+    yayHdlr();
   };
 };
 
@@ -141,21 +150,28 @@ function getDBCachedMessage(requestUrl, yayHdlr) {
 
       if (item != null) {
 
-        yayHdlr(item.data);
+        yayHdlr( new Response(JSON.stringify(item.data), {
+          headers: {
+            'content-type': 'application/json'
+          }
+        }));
+
       } else {
         yayHdlr(null);
       }
+  };
+
+  getRequest.onerror = function(e) {
+    yayHdlr(null);
   };
 };
 
 function putDBCachedMessage(requestUrl, response) {
 
-  console.log('db-put1: '+ response);
-  var rData = JSON.stringify(response);
-  console.log('db-put2: '+ rData);
-
-  getObjectStore().put({
-    url: requestUrl,
-    data: rData
+  response.json().then(function(json) {
+    getObjectStore().put({
+      url: requestUrl,
+      data: json
+    });
   });
 };
