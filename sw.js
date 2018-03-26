@@ -14,10 +14,11 @@ var name = 'restaurants-simple-cache-v2',
 
 self.addEventListener('install', function(event) {
 
-  event.waitUntil(openDatabase(function() {
-    return Promise.resolve(true).then();
+  event.waitUntil(openDatabase().then(function() {
+    }).catch(function(e) {
+        console.log(e);
     })
-  );
+  );        
 
   event.waitUntil(
     caches.open(name).then(function(cache) {
@@ -114,22 +115,26 @@ var objStoreName = 'mws-restaurant-calls'
 var idbDatabase;
 
 
-function openDatabase(yayHdlr) {
+function openDatabase() {
 
   var indexedDBOpenRequest = indexedDB.open(dbName, 1);
 
-  indexedDBOpenRequest.onerror = function(error) {
-    console.error('IndexedDB error:', error);
-  };
+  return new Promise((resolve, reject) => {
 
-  indexedDBOpenRequest.onupgradeneeded = function() {
-    this.result.createObjectStore(objStoreName, {keyPath: 'url'});
-  };
+    indexedDBOpenRequest.onupgradeneeded = function() {
+      this.result.createObjectStore(objStoreName, {keyPath: 'url'});
+    };
 
-  indexedDBOpenRequest.onsuccess = function() {
-    idbDatabase = this.result;
-    yayHdlr();
-  };
+    indexedDBOpenRequest.onsuccess = function() {
+      idbDatabase = this.result;
+      resolve();
+    };
+
+    indexedDBOpenRequest.onerror = function(error) {
+      console.error('IndexedDB error:', error);
+      reject();
+    };    
+  });
 };
 
 function getObjectStore() {
