@@ -18,115 +18,117 @@
 </head>
 
 <body>
-  <header>
-    <div id="headmenu">
-      <nav>
-        <h1><a id="headref" href="/">Restaurant Reviews</a></h1>
-      </nav>
-      <a id="menu" class="header__menu" tabindex="-1" aria-hidden="true" aria-label="header menu">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMin meet">
-          <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"/>
-        </svg>
-      </a>
-    </div>
-  </header>
-
-  <main id="maincontent">
-    <section id="map-container">
-      <div id="map" role="application" aria-label="google map" tabindex="-1" aria-hidden="true"></div>
-    </section>
-    <section>
-      <div class="filter-options">
-        <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" role="listbox" 
-                aria-hidden="false" aria-label="neighborhoods selector">
-          <option value="all">All Neighborhoods</option>
-        </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" role="listbox"
-                aria-hidden="false" aria-label="cuisines selector">
-          <option value="all">All Cuisines</option>
-        </select>
+  <img id="splash" id="splashimg" src="img/LoadingCircle.webp" alt="splash screen"/>
+  <div id="wrapper" class="one-edge-shadow"> 
+    <header>
+      <div id="headmenu">
+        <nav>
+          <h1><a id="headref" href="/">Restaurant Reviews</a></h1>
+        </nav>
+        <a id="menu" class="header__menu" tabindex="-1" aria-hidden="true" aria-label="header menu">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" preserveAspectRatio="xMidYMin meet">
+            <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"/>
+          </svg>
+        </a>
       </div>
-      <ul id="restaurants-list"></ul>
-    </section>
-  </main>
+    </header>
 
-  <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
+    <main id="maincontent">
+      <section id="map-container">
+        <div id="map" role="application" aria-label="google map" tabindex="-1" aria-hidden="true"></div>
+      </section>
+      <section>
+        <div class="filter-options">
+          <h2>Filter Results</h2>
+          <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" role="listbox" 
+                  aria-hidden="false" aria-label="neighborhoods selector">
+            <option value="all">All Neighborhoods</option>
+          </select>
+          <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" role="listbox"
+                  aria-hidden="false" aria-label="cuisines selector">
+            <option value="all">All Cuisines</option>
+          </select>
+        </div>
+        <ul id="restaurants-list"></ul>
+      </section>
+    </main>
 
-  <script>
-      /*
-       * Open the drawer when the menu ison is clicked.
-       */
-      var menu = document.querySelector('#menu');
-      var menuStyle = window.getComputedStyle(menu);
-      var main = document.querySelector('main');
-      var drawer = document.querySelector('.filter-options');
-      var combo1 = document.querySelector('#neighborhoods-select');
-      var combo2 = document.querySelector('#cuisines-select');
+    <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
+    <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
 
-      toggleTabIndex = () => {
-        if (!(menuStyle.getPropertyValue('display') === 'block') || drawer.classList.contains('open')) {
-          combo1.setAttribute("tabindex", "0");
-          combo2.setAttribute("tabindex", "0");          
-        } else {
-          combo1.setAttribute("tabindex", "-1");
-          combo2.setAttribute("tabindex", "-1");
+    <script>
+        /*
+         * Open the drawer when the menu ison is clicked.
+         */
+        var menu = document.querySelector('#menu');
+        var menuStyle = window.getComputedStyle(menu);
+        var main = document.querySelector('main');
+        var drawer = document.querySelector('.filter-options');
+        var combo1 = document.querySelector('#neighborhoods-select');
+        var combo2 = document.querySelector('#cuisines-select');
+
+        toggleTabIndex = () => {
+          if (!(menuStyle.getPropertyValue('display') === 'block') || drawer.classList.contains('open')) {
+            combo1.setAttribute("tabindex", "0");
+            combo2.setAttribute("tabindex", "0");          
+          } else {
+            combo1.setAttribute("tabindex", "-1");
+            combo2.setAttribute("tabindex", "-1");
+          }
         }
-      }
 
-      menu.addEventListener('click', function(e) {
-        drawer.classList.toggle('open'); 
-        e.stopPropagation();
-      });
-      drawer.addEventListener('change', function() {
-        drawer.classList.remove('open');
-      });
-
-      toggleTabIndex();
-
-      var drawerObserver = new MutationObserver(function(mutations){
-          toggleTabIndex();
-      });
-      drawerObserver.observe(drawer, {attributes: true});
-
-      window.addEventListener('resize', function(event){
-        toggleTabIndex();
-      });
-
-      var prevfocus = document.querySelector('#headref');
-      var nextFocus = document.querySelector('#neighborhoods-select');
-
-      prevfocus.onkeydown = function(event) {
-          if (event.keyCode == 9 ) {  // TAB
-            event.preventDefault();
-            nextFocus.focus(); 
-            return false;
-          }
-        return true;
-      };
-      nextFocus.onkeydown = function(event) {
-          if (event.keyCode == 9 && event.shiftKey) {  // Shift+TAB
-            event.preventDefault();
-            prevfocus.focus(); 
-            return false;
-          }
-        return true;
-      };
-
-      if ('serviceWorker' in navigator) {
-        // Recommended to register onLoad
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js', {scope: './'});
+        menu.addEventListener('click', function(e) {
+          drawer.classList.toggle('open'); 
+          e.stopPropagation();
         });
-      }
-  </script>
+        drawer.addEventListener('change', function() {
+          drawer.classList.remove('open');
+        });
 
-  <footer id="footer">
-    Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
-  </footer>
+        toggleTabIndex();
 
+        var drawerObserver = new MutationObserver(function(mutations){
+            toggleTabIndex();
+        });
+        drawerObserver.observe(drawer, {attributes: true});
+
+        window.addEventListener('resize', function(event){
+          toggleTabIndex();
+        });
+
+        var prevfocus = document.querySelector('#headref');
+        var nextFocus = document.querySelector('#neighborhoods-select');
+
+        prevfocus.onkeydown = function(event) {
+            if (event.keyCode == 9 ) {  // TAB
+              event.preventDefault();
+              nextFocus.focus(); 
+              return false;
+            }
+          return true;
+        };
+        nextFocus.onkeydown = function(event) {
+            if (event.keyCode == 9 && event.shiftKey) {  // Shift+TAB
+              event.preventDefault();
+              prevfocus.focus(); 
+              return false;
+            }
+          return true;
+        };
+
+        if ('serviceWorker' in navigator) {
+          // Recommended to register onLoad
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js', {scope: './'});
+          });
+        }
+    </script>
+
+    <footer id="footer">
+      Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    </footer>
+  </div>
 </body>
 
 </html>

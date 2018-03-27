@@ -149,7 +149,7 @@ class DBHelper {
    * Restaurant SrcSet image URL.
    */
   static imageSrcSetUrlForRestaurant(restaurant) {
-      return (`/img2/${restaurant.id}` + `-300_small.jpg 300w, ` + `/img/${restaurant.id}` + `.jpg 600w`);
+      return (`/img2/${restaurant.id}` + `-300_small.webp 300w, ` + `/img/${restaurant.id}` + `.webp 600w`);
   }
 
  /**
@@ -163,7 +163,7 @@ class DBHelper {
    * Restaurant Src image URL.
    */
   static imageSrcUrlForRestaurant(restaurant) {
-    return (`/img2/${restaurant.id}` + `-300_small.jpg`);
+    return (`/img2/${restaurant.id}` + `-300_small.webp`);
   }
 
   /**
