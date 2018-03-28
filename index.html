@@ -18,7 +18,9 @@
 </head>
 
 <body>
-  <img id="splash" id="splashimg" src="img/LoadingCircle.webp" alt="splash screen"/>
+  <div id="splash">
+    <img id="splashimg" src="img/LoadingCircle.webp" alt="splash screen"/> 
+  </div>
   <div id="wrapper" class="one-edge-shadow"> 
     <header>
       <div id="headmenu">
@@ -123,6 +125,11 @@
             navigator.serviceWorker.register('/sw.js', {scope: './'});
           });
         }
+
+        window.addEventListener('load', function() {
+          document.getElementById('splash').style.display = "none";
+        });
+       
     </script>
 
     <footer id="footer">

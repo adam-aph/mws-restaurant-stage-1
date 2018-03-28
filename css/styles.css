@@ -6,7 +6,7 @@
 }
 html,body
 {
-   min-width: 360px;
+   min-width: 352px;
    width: 100%;
 }
 body,td,th,p {
@@ -58,14 +58,14 @@ article, aside, canvas, details, figcaption, figure, footer, hgroup, menu, nav, 
 }
 
 #splash {
-   width: 100%;
+   width: 100vw;
    height: auto;
    position: fixed;
    top: 0;
    left: 0;
    z-index: 1;
    
-   animation: moment-on 1s linear 0.1s;
+   animation: moment-on 0.1s linear 0.1s;
    animation-fill-mode: forwards;
 }
 
@@ -77,7 +77,6 @@ article, aside, canvas, details, figcaption, figure, footer, hgroup, menu, nav, 
    color: #555;
    border: 1px solid #aaa;
    border-radius: 10px;
-   margin: 20px 20px;
    height: 450px;
    background-color: #fff;
 }
@@ -212,9 +211,9 @@ nav h1 a {
   background-color: #fff;
   border: 2px solid #ccc;
   font-family: Arial,sans-serif;
-  margin: 15px;
+  margin: 5px;
   min-height: 380px;
-  padding: 0 30px 25px;
+  padding: 0 20px 15px;
   text-align: left;
   width: 270px;
   display: inline-block;
