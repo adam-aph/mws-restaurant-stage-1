@@ -28,7 +28,7 @@
   <!-- End header -->
 
   <!-- Beginning main -->
-  <main id="maincontent">
+  <main id="maincontent" role="main">
     <!-- Beginning map -->
     <section id="map-container">
       <div id="map" role="application" aria-label="google map" tabindex="-1" aria-hidden="true"></div>
@@ -89,6 +89,13 @@
           }
         return true;
       };
+
+      if ('serviceWorker' in navigator) {
+        // Recommended to register onLoad
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', {scope: './'});
+        });
+      }
 
   </script> 
   <!-- End scripts -->

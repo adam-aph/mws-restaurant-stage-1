@@ -1,13 +1,13 @@
 
 var name = 'restaurants-simple-cache-v2',
     filesToCache = [
+      './',
       './index.html',
       './restaurant.html',
       './sw.js',
       './css/styles.css',
-      './js/dbhelpers.js',
-      './js/main.js',
-      './js/IDBcontroller.js',      
+      './js/dbhelper.js',
+      './js/main.js',      
       './js/restaurant_info.js'
     ];
 

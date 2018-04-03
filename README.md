@@ -4,6 +4,6 @@
 
 ## Project Overview: Stage 2
 
+## Run it:  http://localhost:8000/
 
-
-
+## Server:  http://localhost:1337/
