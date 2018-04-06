@@ -3,13 +3,31 @@
  */
 class DBHelper {
 
+
+  static get PORT() {
+    return 1337;
+  }
+
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 1337;
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${DBHelper.PORT}/restaurants`;
+  }
+
+  /**
+   * Database URL.
+   */
+  static getDatabaseUrlOne(id) {
+    return `http://localhost:${DBHelper.PORT}/restaurants/${id}`;
+  }
+
+/**
+   * Database URL Reviews.
+   */
+  static getDatabaseUrlOneReviews(id) {
+    return `http://localhost:${DBHelper.PORT}/reviews/?restaurant_id=${id}`;
   }
 
   /**
@@ -31,23 +49,49 @@ class DBHelper {
   }
 
   /**
-   * Fetch a restaurant by its ID.
+   * Fetch one restaurant.
    */
-  static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
+  static fetchOneRestaurant(id, callback) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', DBHelper.getDatabaseUrlOne(id));
+    xhr.onload = () => {
+      if (xhr.status === 200) { // Got a success response from server!
+        const restaurant = JSON.parse(xhr.responseText);
         if (restaurant) { // Got the restaurant
           callback(null, restaurant);
         } else { // Restaurant does not exist in the database
           callback('Restaurant does not exist', null);
         }
+      } else { // Oops!. Got an error from server.
+        const error = (`Request failed. Returned status of ${xhr.status}`);
+        callback(error, null);
       }
-    });
+    };
+    xhr.send();
   }
+
+  /**
+   * Fetch one restaurant.
+   */
+  static fetchOneRestaurantReviews(id, callback) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', DBHelper.getDatabaseUrlOneReviews(id));
+    xhr.onload = () => {
+      if (xhr.status === 200) { // Got a success response from server!
+        const reviews = JSON.parse(xhr.responseText);
+        if (reviews) { // Got the restaurant
+          callback(null, reviews);
+        } else { // Restaurant does not exist in the database
+          callback('Reviews do not exist', null);
+        }
+      } else { // Oops!. Got an error from server.
+        const error = (`Request failed. Returned status of ${xhr.status}`);
+        callback(error, null);
+      }
+    };
+    xhr.send();
+  }
+
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
@@ -186,5 +230,6 @@ class DBHelper {
     );
     return marker;
   }
+
 
 }

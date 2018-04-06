@@ -41,14 +41,19 @@ fetchRestaurantFromURL = (callback) => {
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
-    DBHelper.fetchRestaurantById(id, (error, restaurant) => {
+    DBHelper.fetchOneRestaurant(id, (error, restaurant) => {
       self.restaurant = restaurant;
       if (!restaurant) {
         console.error(error);
         return;
       }
       fillRestaurantHTML(); 
-      callback(null, restaurant)
+      callback(null, restaurant);
+    });
+    DBHelper.fetchOneRestaurantReviews(id, (error, reviews) => {
+      self.restaurant.reviews = reviews;
+      fillReviewsHTML(); 
+      callback(null, self.restaurant);
     });
   }
 }
@@ -79,8 +84,6 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
-  // fill reviews
-  fillReviewsHTML();
 }
 
 /**
@@ -139,7 +142,8 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  dateTime = new Date(review.updatedAt);
+  date.innerHTML = dateTime.toString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
