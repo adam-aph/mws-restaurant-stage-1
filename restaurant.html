@@ -61,6 +61,19 @@
   </footer>
   <!-- End footer -->
 
+  <div id="reviewform">
+    <div id="popupReview">
+      <img id="close-img" src="icons/close.png" onclick ="div_hide()">
+      <form action="#" id="form" method="post" name="form">   
+        <h2>Write Review</h2>
+          <input id="name" name="name" placeholder="Name" type="text">
+          <input id="rating" name="rating" placeholder="Rating (1-6)" type="text">
+          <textarea id="msg" name="review" placeholder="Review"></textarea>
+        <a href="javascript:%20check_empty()" id="submit">Send</a>
+      </form>
+    </div>
+  </div>
+
   <!-- Beginning scripts -->
   <!-- Database helpers -->
   <script type="text/javascript" src="js/dbhelper.js"></script>

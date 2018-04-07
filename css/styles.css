@@ -338,6 +338,12 @@ nav h1 a {
   padding-bottom: 1pt;
   width: 100%;
 }
+#reviews-container h4 a {
+    float: right;
+    font-size: 12pt;
+    color: darkblue;
+    background-color: aquamarine;
+}
 #reviews-list {
   margin: 0;
   padding: 0;
@@ -351,13 +357,105 @@ nav h1 a {
   overflow: hidden;
   padding: 0 20px 20px;
   position: relative;
-  /*width: 100%;*/
 }
 #reviews-list li p {
   margin: 0 0 10px;
 }
 #restaurant-hours td {
   color: #666;
+}
+#reviewform {
+  width: 100%;
+  height: 100%;
+  opacity: .95;
+  top: 0;
+  left: 0;
+  display: none;
+  position: fixed;
+  background-color: #313131;
+  overflow: visible;
+}
+#close-img {
+  position: absolute;
+  right: -16px;
+  top: -16px;
+  cursor: pointer
+}
+div #popupReview {
+  position: fixed;
+  left: 50%;
+  top: 17%;
+  margin-left: -202px;
+  overflow: visible;
+}
+form {
+  max-width: 300px;
+  min-width: 250px;
+  padding: 10px 50px;
+  border: 2px solid gray;
+  border-radius: 10px;
+  background-color:#fff
+}
+form p {
+  margin-top: 30px
+}
+form h2 {
+  background-color: #FEFFED;
+  padding: 20px 35px;
+  margin: -10px -50px;
+  text-align: center;
+  border-radius: 10px 10px 0 0
+}
+form hr {
+  margin: 10px -50px;
+  border: 0;
+  border-top: 1px solid #ccc
+}
+input [type=text] {
+  width: 95%;
+  padding: 10px;
+  margin-top: 30px;
+  border: 1px solid #ccc;
+  /*padding-left: 40px;*/
+  font-size: 16px;
+}
+#name {
+  background-repeat: no-repeat;
+  background-position: 5px 7px
+}
+#rating {
+  background-repeat: no-repeat;
+  background-position: 5px 7px
+}
+textarea {
+  background-repeat: no-repeat;
+  background-position: 5px 7px;
+  width: 95%;
+  height: 95px;
+  padding: 10px;
+  resize: none;
+  margin-top: 30px;
+  border: 1px solid #ccc;
+  /*padding-left: 40px;*/
+  font-size: 16px;
+  margin-bottom: 30px
+}
+#submit {
+  text-decoration: none;
+  width: 100%;
+  text-align: center;
+  display: block;
+  background-color: #FFBC00;
+  color: #fff;
+  border: 1px solid #FFCB00;
+  padding: 10px 0;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 5px
+}
+span {
+  color: red;
+  font-weight: 700
 }
 
 /* ====================== Change style ====================== */
@@ -415,6 +513,9 @@ nav h1 a {
   }
   #reviews-container h4 {
     font-size: 12pt;
+  }
+  #reviews-container h4 a {
+    font-size: 10pt;
   }
   #restaurant-contents {
     display: inline-block;

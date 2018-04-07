@@ -49,11 +49,11 @@ fetchRestaurantFromURL = (callback) => {
       }
       fillRestaurantHTML(); 
       callback(null, restaurant);
-    });
-    DBHelper.fetchOneRestaurantReviews(id, (error, reviews) => {
-      self.restaurant.reviews = reviews;
-      fillReviewsHTML(); 
-      callback(null, self.restaurant);
+
+      DBHelper.fetchOneRestaurantReviews(id, (error, reviews) => {
+        self.restaurant.reviews = reviews;
+        fillReviewsHTML(); 
+      });      
     });
   }
 }
@@ -115,6 +115,13 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h4');
   title.innerHTML = 'Reviews';
+  const refLink = document.createElement('a');
+  refLink.innerHTML = 'Add Review';
+  refLink.href = "javascript:%20div_show()";
+  refLink.setAttribute("aria-label", "add review");
+  refLink.setAttribute("role", "button");
+  refLink.setAttribute("tabindex", "0"); 
+  title.append(refLink);
   container.appendChild(title);
 
   if (!reviews) {
@@ -184,4 +191,26 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+function check_empty() {
+  if (document.getElementById('name').value == "" || 
+    document.getElementById('rating').value == "" || 
+    document.getElementById('msg').value == "") {
+    
+    alert("Fill All Fields !");
+  } else {
+
+    //document.getElementById('form').submit();
+    alert("Form Submitted Successfully...");
+    div_hide();
+  }
+}
+
+function div_show() {
+  document.getElementById('reviewform').style.display = "block";
+}
+
+function div_hide() {
+  document.getElementById('reviewform').style.display = "none";
 }
