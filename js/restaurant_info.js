@@ -158,7 +158,7 @@ createReviewHTML = (review) => {
   li.appendChild(rating);
 
   const comments = document.createElement('p');
-  comments.innerHTML = review.comments;
+  comments.innerHTML = escapeUnicode(review.comments);
   li.appendChild(comments);
 
   return li;
@@ -193,6 +193,9 @@ getParameterByName = (name, url) => {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+/**
+ * Check review form.
+ */
 function check_empty() {
   if (document.getElementById('name').value == "" || 
     document.getElementById('rating').value == "" || 
@@ -207,10 +210,28 @@ function check_empty() {
   }
 }
 
+/**
+ * Show the review form.
+ */
 function div_show() {
+  document.getElementById('name').value = ""; 
+  document.getElementById('rating').value = ""; 
+  document.getElementById('msg').value = "";
   document.getElementById('reviewform').style.display = "block";
 }
 
+/**
+ * Hide the review form.
+ */
 function div_hide() {
   document.getElementById('reviewform').style.display = "none";
+}
+
+/**
+ * Escape the review text.
+ */
+function escapeUnicode(str) {
+    return str.replace(/[^\0-~]/g, function(ch) {
+        return "&#x" + ("0000" + ch.charCodeAt().toString(16)).slice(-4) + ";";
+    });
 }

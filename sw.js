@@ -54,6 +54,24 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
+  if (requestUrl.pathname.indexOf('/reviews') != -1) {
+
+    event.respondWith( getDBCachedReviews(requestUrl.pathname).then(function(resp) {
+
+        return resp || fetch(event.request).then(function(respScnd) {
+
+            putDBCachedReviews(requestUrl.pathname, respScnd.clone());
+            return respScnd;
+
+        }).catch(function(e) {
+            console.log(e);
+        });
+      })
+    );
+
+    return;
+  }
+
   if (requestUrl.pathname.indexOf('/restaurants') != -1) {
 
     event.respondWith( getDBCachedMessage(requestUrl.pathname).then(function(resp) {
@@ -112,6 +130,7 @@ function servePhoto(request) {
 // ===================================== indexedDB ================================
 var dbName = 'restaurants-simple-idb'
 var objStoreName = 'mws-restaurant-calls'
+var osReviewName = 'mws-restaurant-reviews'
 var idbDatabase;
 
 
@@ -123,6 +142,7 @@ function openDatabase() {
 
     indexedDBOpenRequest.onupgradeneeded = function() {
       this.result.createObjectStore(objStoreName, {keyPath: 'url'});
+      this.result.createObjectStore(osReviewName, {keyPath: 'url'});      
     };
 
     indexedDBOpenRequest.onsuccess = function() {
@@ -139,6 +159,10 @@ function openDatabase() {
 
 function getObjectStore() {
   return idbDatabase.transaction(objStoreName, 'readwrite').objectStore(objStoreName);
+};
+
+function getReviewOS() {
+  return idbDatabase.transaction(osReviewName, 'readwrite').objectStore(osReviewName);
 };
 
 function getDBCachedMessage(requestUrl) {
@@ -173,6 +197,44 @@ function putDBCachedMessage(requestUrl, response) {
 
   response.json().then(function(json) {
     getObjectStore().put({
+      url: requestUrl,
+      data: json
+    });
+  });
+};
+
+function getDBCachedReviews(requestUrl) {
+
+  var getRequest = getReviewOS().get(requestUrl);
+
+  return new Promise((resolve, reject) => {
+    
+    getRequest.onsuccess = function(e) {
+      var item = e.target.result;
+
+      if (item != null) {
+
+        resolve( new Response(JSON.stringify(item.data), {
+          headers: {
+            'content-type': 'application/json'
+          }
+        }));
+
+      } else {
+        resolve(null);
+      }
+    };
+
+    getRequest.onerror = function(e) {
+      reject(null);
+    };
+  });
+};
+
+function putDBCachedReviews(requestUrl, response) {
+
+  response.json().then(function(json) {
+    getReviewOS().put({
       url: requestUrl,
       data: json
     });

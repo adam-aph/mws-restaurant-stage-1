@@ -57,19 +57,19 @@
 
   <!-- Beginning footer -->
   <footer id="footer">
-    Copyright (c) 2017 <a id="footerref" href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
+    Copyright (c) 2018 <a id="footerref" href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
   </footer>
   <!-- End footer -->
 
-  <div id="reviewform">
+  <div id="reviewform" role="form" aria-label="review form" aria-hidden="true">
     <div id="popupReview">
-      <img id="close-img" src="icons/close.png" onclick ="div_hide()">
+      <img id="close-img" src="icons/close.png" onclick="div_hide()" role="button" aria-label="close button">
       <form action="#" id="form" method="post" name="form">   
         <h2>Write Review</h2>
           <input id="name" name="name" placeholder="Name" type="text">
           <input id="rating" name="rating" placeholder="Rating (1-6)" type="text">
           <textarea id="msg" name="review" placeholder="Review"></textarea>
-        <a href="javascript:%20check_empty()" id="submit">Send</a>
+        <a href="javascript:%20check_empty()" id="submit" role="button" aria-label="submit button">Send</a>
       </form>
     </div>
   </div>
