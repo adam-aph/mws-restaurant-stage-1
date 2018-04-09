@@ -138,6 +138,24 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 }
 
 /**
+ * Update all reviews HTML and add them to the webpage.
+ */
+updateReviewsHTML = (reviews = self.restaurant.reviews) => {
+
+  if (!reviews) {
+    return;
+  }
+  const ul = document.getElementById('reviews-list');
+  while (ul.firstChild) {
+    ul.removeChild(ul.firstChild);
+  }
+
+  reviews.forEach(review => {
+    ul.appendChild(createReviewHTML(review));
+  });
+}
+
+/**
  * Create review HTML and add it to the webpage.
  */
 createReviewHTML = (review) => {
@@ -197,15 +215,22 @@ getParameterByName = (name, url) => {
  * Check review form.
  */
 function check_empty() {
-  if (document.getElementById('name').value == "" || 
-    document.getElementById('rating').value == "" || 
-    document.getElementById('msg').value == "") {
+  let name = document.getElementById('name').value;
+  let rating = document.getElementById('rating').value;
+  let msg = document.getElementById('msg').value;
+
+  if (name == "" || rating == "" || msg == "") {
     
     alert("Fill All Fields !");
+
+  } else if (rating < 1 || rating > 6) {
+    
+    alert("Rating: 1-6 !");
+
   } else {
 
     //document.getElementById('form').submit();
-    alert("Form Submitted Successfully...");
+    submit_form(name, rating, msg);
     div_hide();
   }
 }
@@ -214,8 +239,8 @@ function check_empty() {
  * Show the review form.
  */
 function div_show() {
-  document.getElementById('name').value = ""; 
-  document.getElementById('rating').value = ""; 
+  document.getElementById('name').value = "";
+  document.getElementById('rating').value = "";
   document.getElementById('msg').value = "";
   document.getElementById('reviewform').style.display = "block";
 }
@@ -234,4 +259,31 @@ function escapeUnicode(str) {
     return str.replace(/[^\0-~]/g, function(ch) {
         return "&#x" + ("0000" + ch.charCodeAt().toString(16)).slice(-4) + ";";
     });
+}
+
+/**
+ * Submit the review form.
+ */
+function submit_form(nm, rat, msg) {
+  let xhr = new XMLHttpRequest();
+  const id = getParameterByName('id');
+
+  xhr.open('POST', DBHelper.DATABASE_SUBMIT_REVIEW);
+  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhr.send(JSON.stringify({ restaurant_id: id, name: nm, rating: rat, comments: msg}));
+
+  xhr.onload = () => {
+    if (xhr.status === 201) { // Got a success response from server!
+
+      DBHelper.fetchOneRestaurantReviews(id, (error, reviews) => {
+        self.restaurant.reviews = reviews;
+        updateReviewsHTML(); 
+        window.location.reload();
+      }); 
+
+    } else { // Oops!. Got an error from server.
+      alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
+
+    }
+  }
 }

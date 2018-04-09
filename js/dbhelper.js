@@ -23,11 +23,18 @@ class DBHelper {
     return `http://localhost:${DBHelper.PORT}/restaurants/${id}`;
   }
 
-/**
+  /**
    * Database URL Reviews.
    */
   static getDatabaseUrlOneReviews(id) {
     return `http://localhost:${DBHelper.PORT}/reviews/?restaurant_id=${id}`;
+  }
+
+  /**
+   * Database URL Submit Review.
+   */
+  static get DATABASE_SUBMIT_REVIEW() {
+    return `http://localhost:${DBHelper.PORT}/reviews`;
   }
 
   /**
