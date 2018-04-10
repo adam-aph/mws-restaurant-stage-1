@@ -54,17 +54,15 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
-  if (requestUrl.pathname.indexOf('/reviews') != -1) {
+  if (requestUrl.pathname.indexOf('/reviews/') != -1) {  // cache all reviews = '/reviews/?restaurant_id=id'
 
-    event.respondWith( getDBCachedReviews(requestUrl.pathname).then(function(resp) {
-
-        return resp || fetch(event.request).then(function(respScnd) {
-
-            putDBCachedReviews(requestUrl.pathname, respScnd.clone());
-            return respScnd;
-
-        }).catch(function(e) {
-            console.log(e);
+    event.respondWith(
+      caches.open(name).then(function(cache) {
+        return fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          return response;
+        }).catch(function() {
+          return cache.match(event.request);
         });
       })
     );

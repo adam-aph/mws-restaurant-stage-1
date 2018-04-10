@@ -137,23 +137,25 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   container.appendChild(ul);
 }
 
+
 /**
- * Update all reviews HTML and add them to the webpage.
+ * Add new review HTML and add them to the webpage.
  */
-updateReviewsHTML = (reviews = self.restaurant.reviews) => {
+addReviewsHTMLOffline = (nm, rat, msg) => {
 
-  if (!reviews) {
-    return;
-  }
   const ul = document.getElementById('reviews-list');
-  while (ul.firstChild) {
-    ul.removeChild(ul.firstChild);
-  }
-
-  reviews.forEach(review => {
-    ul.appendChild(createReviewHTML(review));
-  });
+  ul.insertBefore(createReviewHTML({name: nm, rating: rat, comments: msg, updatedAt: 0}), null);
 }
+
+/**
+ * Add new review HTML and add them to the webpage.
+ */
+addReviewsHTML = (response) => {
+
+  const ul = document.getElementById('reviews-list');
+  ul.insertBefore(createReviewHTML(response), null);
+}
+
 
 /**
  * Create review HTML and add it to the webpage.
@@ -167,8 +169,12 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  dateTime = new Date(review.updatedAt);
-  date.innerHTML = dateTime.toString();
+  if (review.updatedAt != 0) {
+    dateTime = new Date(review.updatedAt);
+    date.innerHTML = dateTime.toString();
+  } else {
+    date.innerHTML = 'Not yet updated at the Server';
+  }
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -229,7 +235,6 @@ function check_empty() {
 
   } else {
 
-    //document.getElementById('form').submit();
     submit_form(name, rating, msg);
     div_hide();
   }
@@ -270,20 +275,28 @@ function submit_form(nm, rat, msg) {
 
   xhr.open('POST', DBHelper.DATABASE_SUBMIT_REVIEW);
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  xhr.send(JSON.stringify({ restaurant_id: id, name: nm, rating: rat, comments: msg}));
-
+  
   xhr.onload = () => {
     if (xhr.status === 201) { // Got a success response from server!
 
+      var jsonResponse = JSON.parse(xhr.responseText);
+      addReviewsHTML(jsonResponse);
+
+      // update cache
       DBHelper.fetchOneRestaurantReviews(id, (error, reviews) => {
         self.restaurant.reviews = reviews;
-        updateReviewsHTML(); 
-        window.location.reload();
       }); 
 
     } else { // Oops!. Got an error from server.
       alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
-
+      addReviewsHTMLOffline(nm, rat, msg);
     }
   }
+
+  xhr.onerror = () => {
+      alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
+      addReviewsHTMLOffline(nm, rat, msg);
+  }
+
+  xhr.send(JSON.stringify({ restaurant_id: id, name: nm, rating: rat, comments: msg}));
 }
