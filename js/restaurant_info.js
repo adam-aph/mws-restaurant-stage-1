@@ -141,10 +141,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 /**
  * Add new review HTML and add them to the webpage.
  */
-addReviewsHTMLOffline = (nm, rat, msg) => {
+addReviewsHTMLOffline = (nm, rat, msg, uid) => {
 
   const ul = document.getElementById('reviews-list');
-  ul.insertBefore(createReviewHTML({name: nm, rating: rat, comments: msg, updatedAt: 0}), null);
+  ul.insertBefore(createReviewHTML({name: nm, rating: rat, comments: msg, updatedAt: 0, uuid: uid}), null);
 }
 
 /**
@@ -163,6 +163,9 @@ addReviewsHTML = (response) => {
 createReviewHTML = (review) => {
   const li = document.createElement('li');
   li.setAttribute("tabindex", "0");
+  if (review.hasOwnProperty('uuid')) {
+    li.setAttribute("uuid", review.uuid);
+  }
 
   const name = document.createElement('p');
   name.innerHTML = review.name;
@@ -267,6 +270,21 @@ function escapeUnicode(str) {
 }
 
 /**
+ * Generate UUID.
+ */
+function generateUUID() {
+    var d = new Date().getTime();
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+        d += performance.now(); //use high-precision timer if available
+    }
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = (d + Math.random() * 16) % 16 | 0;
+        d = Math.floor(d / 16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+}
+
+/**
  * Submit the review form.
  */
 function submit_form(nm, rat, msg) {
@@ -289,14 +307,25 @@ function submit_form(nm, rat, msg) {
 
     } else { // Oops!. Got an error from server.
       alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
-      addReviewsHTMLOffline(nm, rat, msg);
+      const uid = generateUUID();
+      addReviewsHTMLOffline(nm, rat, msg, uid);
+
+      navigator.serviceWorker.controller
+        .postMessage({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
+              options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
+              body: JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg})}});
     }
   }
 
   xhr.onerror = () => {
       alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
-      addReviewsHTMLOffline(nm, rat, msg);
+      const uid = generateUUID();
+      addReviewsHTMLOffline(nm, rat, msg, uid);
+      navigator.serviceWorker.controller
+        .postMessage({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
+              options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
+              body: JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg})}});
   }
 
-  xhr.send(JSON.stringify({ restaurant_id: id, name: nm, rating: rat, comments: msg}));
+  xhr.send(JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg}));
 }

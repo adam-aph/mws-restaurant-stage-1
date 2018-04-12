@@ -30,6 +30,15 @@ self.addEventListener('install', function(event) {
 });  
 
 self.addEventListener('activate', function (event) {
+  self.clients.matchAll({
+    includeUncontrolled: true
+  }).then(function(clientList) {
+    var urls = clientList.map(function(client) {
+      return client.url;
+    });
+    console.log('[ServiceWorker] Matching clients:', urls.join(', '));
+  });
+
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(cacheNames.filter(function(cacheName) {
@@ -38,11 +47,16 @@ self.addEventListener('activate', function (event) {
           return caches.delete(cacheName);
         })
       );
+
+    }).then(function() {
+      return self.clients.claim();
+
     }).catch(function(e) {
         console.log(e);
     })
   );
 });
+
 
 self.addEventListener('fetch', function(event) {
   var requestUrl = new URL(event.request.url);
@@ -124,6 +138,38 @@ function servePhoto(request) {
     });
   });
 }
+
+/* temporary store */
+const syncStore = {}
+
+self.addEventListener('message', event => {
+  if(event.data.type === 'sync') {
+    const id = event.data.uuid;
+    syncStore[id] = event.data;
+
+    // register a sync and pass the id as tag for it to get the data
+    self.registration.sync.register(id)
+  }
+  // console.log('Save> uuid: ' + event.data.uuid + ' url: ' + event.data.url + ' options: ' + JSON.stringify(event.data.options));
+});
+
+self.addEventListener('sync', event => {
+  // get the data by tag
+  const {url, options} = syncStore[event.tag];
+  console.log('Sync> Fetch url: ' + url + ' options: ' + JSON.stringify(options));
+
+  event.waitUntil(fetch(url, options).then(function(response) {  
+      return response.json();
+
+    }).then(function(data) {
+      console.log('Sync> Response data: ' + JSON.stringify(data));
+
+    }).catch(function(err) { 
+      console.error(err); 
+
+    })
+  );
+});
 
 // ===================================== indexedDB ================================
 var dbName = 'restaurants-simple-idb'
