@@ -285,6 +285,49 @@ function generateUUID() {
 }
 
 /**
+ * Send Info to Service Worker.
+ */
+function sendMessageToSW(msg) {
+
+    return new Promise(function(resolve, reject){
+        // Create a Message Channel
+        var msg_chan = new MessageChannel();
+
+        // Handler for recieving message reply from service worker
+        msg_chan.port1.onmessage = function(event){
+            if(event.data.error){
+                reject(event.data.error);
+            }else{
+                resolve(event.data);
+            }
+        };
+
+        // Send message to service worker along with port for reply
+        navigator.serviceWorker.controller.postMessage(msg, [msg_chan.port2]);
+    });
+}
+
+/**
+ * Send Ppostponed Message.
+ */
+function sendPostponedMsg(id, nm, rat, msg) {
+
+  const uid = generateUUID();
+  addReviewsHTMLOffline(nm, rat, msg, uid);
+
+  sendMessageToSW({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
+                  options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
+                  body: {restaurant_id: id, name: nm, rating: rat, comments: msg}}})
+
+    .then(function(response) {
+      console.log("SW responded: " + JSON.stringify(response));
+
+    }).catch(function(error) {
+      console.log("SW error: " + error);
+    });
+}
+
+/**
  * Submit the review form.
  */
 function submit_form(nm, rat, msg) {
@@ -307,24 +350,13 @@ function submit_form(nm, rat, msg) {
 
     } else { // Oops!. Got an error from server.
       alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
-      const uid = generateUUID();
-      addReviewsHTMLOffline(nm, rat, msg, uid);
-
-      navigator.serviceWorker.controller
-        .postMessage({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
-              options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
-              body: JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg})}});
+      sendPostponedMsg(id, nm, rat, msg);
     }
   }
 
   xhr.onerror = () => {
       alert("Submit Error: " + xhr.status + "\nYour review will be re-submitted automatically later");
-      const uid = generateUUID();
-      addReviewsHTMLOffline(nm, rat, msg, uid);
-      navigator.serviceWorker.controller
-        .postMessage({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
-              options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
-              body: JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg})}});
+      sendPostponedMsg(id, nm, rat, msg);
   }
 
   xhr.send(JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg}));

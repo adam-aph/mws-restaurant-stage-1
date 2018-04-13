@@ -145,7 +145,7 @@ const syncStore = {}
 self.addEventListener('message', event => {
   if(event.data.type === 'sync') {
     const id = event.data.uuid;
-    syncStore[id] = event.data;
+    syncStore[id] = event;
 
     // register a sync and pass the id as tag for it to get the data
     self.registration.sync.register(id)
@@ -155,14 +155,17 @@ self.addEventListener('message', event => {
 
 self.addEventListener('sync', event => {
   // get the data by tag
-  const {url, options} = syncStore[event.tag];
-  console.log('Sync> Fetch url: ' + url + ' options: ' + JSON.stringify(options));
+  const savedEvent = syncStore[event.tag];
+  delete syncStore[event.tag]
 
-  event.waitUntil(fetch(url, options).then(function(response) {  
+  console.log('Sync> Fetch url: ' + savedEvent.data.url + ' options: ' + JSON.stringify(savedEvent.data.options));
+
+  event.waitUntil(fetch(savedEvent.data.url, savedEvent.data.options).then(function(response) {  
       return response.json();
 
     }).then(function(data) {
       console.log('Sync> Response data: ' + JSON.stringify(data));
+      savedEvent.ports[0].postMessage(data);
 
     }).catch(function(err) { 
       console.error(err); 
