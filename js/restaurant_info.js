@@ -132,7 +132,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   }
   const ul = document.getElementById('reviews-list');
   reviews.forEach(review => {
-    ul.appendChild(createReviewHTML(review));
+    ul.appendChild(createReviewHTML(null, review));
   });
   container.appendChild(ul);
 }
@@ -144,7 +144,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 addReviewsHTMLOffline = (nm, rat, msg, uid) => {
 
   const ul = document.getElementById('reviews-list');
-  ul.insertBefore(createReviewHTML({name: nm, rating: rat, comments: msg, updatedAt: 0, uuid: uid}), null);
+  ul.insertBefore(createReviewHTML(null, {name: nm, rating: rat, comments: msg, updatedAt: 0, uuid: uid}), null);
 }
 
 /**
@@ -153,19 +153,46 @@ addReviewsHTMLOffline = (nm, rat, msg, uid) => {
 addReviewsHTML = (response) => {
 
   const ul = document.getElementById('reviews-list');
-  ul.insertBefore(createReviewHTML(response), null);
+  ul.insertBefore(createReviewHTML(null, response), null);
+}
+
+/**
+ * Update new review HTML and add them to the webpage.
+ */
+updateReviewsHTMLOffline = (nm, rat, msg, uid, time) => {
+
+  console.log('Updating uuid: ' + uid);
+
+  var ul = document.getElementById('reviews-list');
+  var items = ul.getElementsByTagName('li');
+  for (var i = 0; i < items.length; ++i) {
+    if (items[i].getAttribute("uuid") == uid) { 
+      createReviewHTML(items[i], {name: nm, rating: rat, comments: msg, updatedAt: time}); 
+    }
+  }
 }
 
 
 /**
  * Create review HTML and add it to the webpage.
  */
-createReviewHTML = (review) => {
-  const li = document.createElement('li');
+createReviewHTML = (liref, review) => {
+  var li = liref;
+
+  if (liref == null) {
+    li = document.createElement('li');
+  } else {
+    // remove childs
+    while (li.firstChild) {
+      li.removeChild(li.firstChild);
+    }
+  }
+
   li.setAttribute("tabindex", "0");
+
   if (review.hasOwnProperty('uuid')) {
     li.setAttribute("uuid", review.uuid);
-  }
+  } 
 
   const name = document.createElement('p');
   name.innerHTML = review.name;
@@ -315,15 +342,16 @@ function sendPostponedMsg(id, nm, rat, msg) {
   const uid = generateUUID();
   addReviewsHTMLOffline(nm, rat, msg, uid);
 
+  console.log('New sendPostponedMsg uuid: ' + uid);
   sendMessageToSW({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
                   options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
                   body: {restaurant_id: id, name: nm, rating: rat, comments: msg}}})
 
     .then(function(response) {
-      console.log("SW responded: " + JSON.stringify(response));
-
+      updateReviewsHTMLOffline(nm, rat, msg, uid, response.updatedAt);
+     
     }).catch(function(error) {
-      console.log("SW error: " + error);
+      console.log(error);
     });
 }
 

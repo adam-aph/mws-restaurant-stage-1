@@ -59,6 +59,11 @@ self.addEventListener('activate', function (event) {
 
 
 self.addEventListener('fetch', function(event) {
+
+  if (event.request.method != 'GET') {
+    return;
+  }
+
   var requestUrl = new URL(event.request.url);
 
   if (requestUrl.origin === location.origin) {
@@ -150,26 +155,22 @@ self.addEventListener('message', event => {
     // register a sync and pass the id as tag for it to get the data
     self.registration.sync.register(id)
   }
-  // console.log('Save> uuid: ' + event.data.uuid + ' url: ' + event.data.url + ' options: ' + JSON.stringify(event.data.options));
 });
 
 self.addEventListener('sync', event => {
   // get the data by tag
   const savedEvent = syncStore[event.tag];
-  delete syncStore[event.tag]
+  // do not delete for testing purposes
+  // delete syncStore[event.tag]
 
-  console.log('Sync> Fetch url: ' + savedEvent.data.url + ' options: ' + JSON.stringify(savedEvent.data.options));
-
-  event.waitUntil(fetch(savedEvent.data.url, savedEvent.data.options).then(function(response) {  
+    event.waitUntil(fetch(savedEvent.data.url, savedEvent.data.options).then(function(response) {  
       return response.json();
 
     }).then(function(data) {
-      console.log('Sync> Response data: ' + JSON.stringify(data));
       savedEvent.ports[0].postMessage(data);
 
     }).catch(function(err) { 
       console.error(err); 
-
     })
   );
 });
