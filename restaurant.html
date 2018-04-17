@@ -66,7 +66,13 @@
       <img id="close-img" src="icons/close.png" onclick="div_hide()" role="button" aria-label="close button">
       <form action="#" id="form" method="post" name="form">   
         <h2>Write Review</h2>
-          <input id="name" name="name" placeholder="Name" type="text">
+          <div class="form-group">
+            <input id="name" name="name" placeholder="Name" type="text">
+            <div class="fav-checkbox form-control-inline">
+              <label for="subscribeNews">Favorite?</label>
+              <input id="favorite" name="favorite" type="checkbox">
+            </div>            
+          </div>
           <input id="rating" name="rating" placeholder="Rating (1-6)" type="text">
           <textarea id="msg" name="review" placeholder="Review"></textarea>
         <a href="javascript:%20check_empty()" id="submit" role="button" aria-label="submit button">Send</a>

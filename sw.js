@@ -73,6 +73,7 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
+/*
   if (requestUrl.pathname.indexOf('/reviews/') != -1) {  // cache all reviews = '/reviews/?restaurant_id=id'
 
     event.respondWith(
@@ -106,7 +107,34 @@ self.addEventListener('fetch', function(event) {
 
     return;
   }
+*/
 
+  // all json
+  if (requestUrl.origin.indexOf('localhost:1337') != -1) {
+
+    var errRspnd;
+    var url = requestUrl.href;
+
+    event.respondWith(fetch(event.request).then(function(response) {
+        putDBCachedMessage(url, response.clone());
+        return response;
+
+      }).catch(function(e) {
+
+        return getDBCachedMessage(url).then(function(resp) {       
+          return resp;  
+
+        }).catch(function(e) {      
+          return e;
+
+        });
+      })
+    );
+
+    return;
+  }
+
+  // non-json
   event.respondWith(
     caches.open(name).then(function(cache) {
       return cache.match(event.request).then(function (response) {
@@ -178,7 +206,6 @@ self.addEventListener('sync', event => {
 // ===================================== indexedDB ================================
 var dbName = 'restaurants-simple-idb'
 var objStoreName = 'mws-restaurant-calls'
-var osReviewName = 'mws-restaurant-reviews'
 var idbDatabase;
 
 
@@ -189,8 +216,7 @@ function openDatabase() {
   return new Promise((resolve, reject) => {
 
     indexedDBOpenRequest.onupgradeneeded = function() {
-      this.result.createObjectStore(objStoreName, {keyPath: 'url'});
-      this.result.createObjectStore(osReviewName, {keyPath: 'url'});      
+      this.result.createObjectStore(objStoreName, {keyPath: 'url'});     
     };
 
     indexedDBOpenRequest.onsuccess = function() {
@@ -209,13 +235,9 @@ function getObjectStore() {
   return idbDatabase.transaction(objStoreName, 'readwrite').objectStore(objStoreName);
 };
 
-function getReviewOS() {
-  return idbDatabase.transaction(osReviewName, 'readwrite').objectStore(osReviewName);
-};
+function getDBCachedMessage(reqKey) {
 
-function getDBCachedMessage(requestUrl) {
-
-  var getRequest = getObjectStore().get(requestUrl);
+  var getRequest = getObjectStore().get(reqKey);
 
   return new Promise((resolve, reject) => {
     
@@ -241,49 +263,11 @@ function getDBCachedMessage(requestUrl) {
   });
 };
 
-function putDBCachedMessage(requestUrl, response) {
+function putDBCachedMessage(reqKey, response) {
 
   response.json().then(function(json) {
     getObjectStore().put({
-      url: requestUrl,
-      data: json
-    });
-  });
-};
-
-function getDBCachedReviews(requestUrl) {
-
-  var getRequest = getReviewOS().get(requestUrl);
-
-  return new Promise((resolve, reject) => {
-    
-    getRequest.onsuccess = function(e) {
-      var item = e.target.result;
-
-      if (item != null) {
-
-        resolve( new Response(JSON.stringify(item.data), {
-          headers: {
-            'content-type': 'application/json'
-          }
-        }));
-
-      } else {
-        resolve(null);
-      }
-    };
-
-    getRequest.onerror = function(e) {
-      reject(null);
-    };
-  });
-};
-
-function putDBCachedReviews(requestUrl, response) {
-
-  response.json().then(function(json) {
-    getReviewOS().put({
-      url: requestUrl,
+      url: reqKey,
       data: json
     });
   });
