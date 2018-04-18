@@ -31,10 +31,24 @@ class DBHelper {
   }
 
   /**
+   * Database URL All favorites.
+   */
+  static get DATABASE_GET_ALL_FAVORITES() {
+    return `http://localhost:${DBHelper.PORT}/restaurants/?is_favorite=true`;
+  }
+
+  /**
    * Database URL Submit Review.
    */
   static get DATABASE_SUBMIT_REVIEW() {
     return `http://localhost:${DBHelper.PORT}/reviews`;
+  }
+
+  /**
+   * Database URL Update Favorite.
+   */
+  static setDatabaseUrlOneFavorite(id, fav) {
+    return `http://localhost:${DBHelper.PORT}/restaurants/${id}/?is_favorite=${fav}`;
   }
 
   /**
@@ -98,7 +112,6 @@ class DBHelper {
     };
     xhr.send();
   }
-
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.

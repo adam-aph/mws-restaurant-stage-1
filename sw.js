@@ -176,7 +176,7 @@ function servePhoto(request) {
 const syncStore = {}
 
 self.addEventListener('message', event => {
-  if(event.data.type === 'sync') {
+  if(event.data.type === 'review' || event.data.type === 'favorite') {
     const id = event.data.uuid;
     syncStore[id] = event;
 
@@ -195,6 +195,7 @@ self.addEventListener('sync', event => {
       return response.json();
 
     }).then(function(data) {
+      data.type = savedEvent.data.type;
       savedEvent.ports[0].postMessage(data);
 
     }).catch(function(err) { 
@@ -202,6 +203,8 @@ self.addEventListener('sync', event => {
     })
   );
 });
+
+
 
 // ===================================== indexedDB ================================
 var dbName = 'restaurants-simple-idb'

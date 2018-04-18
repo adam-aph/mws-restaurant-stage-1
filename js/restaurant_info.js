@@ -54,7 +54,8 @@ fetchRestaurantFromURL = (callback) => {
         self.restaurant.reviews = reviews;
         fillReviewsHTML(); 
       });      
-    });
+
+     });
   }
 }
 
@@ -64,7 +65,8 @@ fetchRestaurantFromURL = (callback) => {
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.setAttribute("tabindex", "0");
-  name.innerHTML = restaurant.name;
+  name.innerHTML = restaurant.name + '&emsp;&emsp;&emsp;&emsp;&emsp;' +
+      (restaurant.is_favorite === 'true' ? '[Favorite]' : '[Not favorite]');
 
   const address = document.getElementById('restaurant-address');
   address.setAttribute("tabindex", "0");
@@ -84,6 +86,17 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
+}
+
+/**
+ * Update restaurant HTML
+ */
+updateRestaurantTitleHTML = (fav) => {
+  const name = document.getElementById('restaurant-name');
+  const restaurant = self.restaurant;
+
+  name.innerHTML = restaurant.name + '&emsp;&emsp;&emsp;&emsp;&emsp;' +
+      (restaurant.is_favorite === 'true' ? '[Favorite]' : '[Not favorite]');
 }
 
 /**
@@ -254,6 +267,7 @@ function check_empty() {
   let name = document.getElementById('name').value;
   let rating = document.getElementById('rating').value;
   let msg = document.getElementById('msg').value;
+  let fav = document.getElementById('favorite').checked;
 
   if (name == "" || rating == "" || msg == "") {
     
@@ -265,7 +279,7 @@ function check_empty() {
 
   } else {
 
-    submit_form(name, rating, msg);
+    submit_form(name, rating, msg, fav);
     div_hide();
   }
 }
@@ -275,6 +289,7 @@ function check_empty() {
  */
 function div_show() {
   document.getElementById('name').value = "";
+  document.getElementById('favorite').checked = (self.restaurant.is_favorite === 'true' ? true : false);
   document.getElementById('rating').value = "";
   document.getElementById('msg').value = "";
   document.getElementById('reviewform').style.display = "block";
@@ -343,7 +358,7 @@ function sendPostponedMsg(id, nm, rat, msg) {
   addReviewsHTMLOffline(nm, rat, msg, uid);
 
   console.log('New sendPostponedMsg uuid: ' + uid);
-  sendMessageToSW({type: 'sync', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
+  sendMessageToSW({type: 'review', uuid: uid, url: DBHelper.DATABASE_SUBMIT_REVIEW,
                   options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
                   body: {restaurant_id: id, name: nm, rating: rat, comments: msg}}})
 
@@ -356,9 +371,29 @@ function sendPostponedMsg(id, nm, rat, msg) {
 }
 
 /**
+ * Send Ppostponed Message.
+ */
+function sendPostponedFavMsg(id, fav) {
+
+  const uid = generateUUID();
+
+  console.log('New sendPostponedFavMsg uuid: ' + uid);
+  sendMessageToSW({type: 'favorite', uuid: uid, url: DBHelper.setDatabaseUrlOneFavorite(id, fav),
+                  options: {method: 'POST', headers: {"Content-Type": "application/json;charset=UTF-8"},
+                  }})
+
+    .then(function(response) {
+      updateRestaurantTitleHTML(fav);
+     
+    }).catch(function(error) {
+      console.log(error);
+    });
+}
+
+/**
  * Submit the review form.
  */
-function submit_form(nm, rat, msg) {
+function submit_form(nm, rat, msg, fav) {
   let xhr = new XMLHttpRequest();
   const id = getParameterByName('id');
 
@@ -388,4 +423,36 @@ function submit_form(nm, rat, msg) {
   }
 
   xhr.send(JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg}));
+
+  var curFav = (self.restaurant.is_favorite === 'true' ? true : false);
+  if (fav != curFav) {
+    let xhr2 = new XMLHttpRequest();
+
+    xhr2.open('POST', DBHelper.setDatabaseUrlOneFavorite(id, fav));
+    xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    
+    xhr2.onload = () => {
+      if (xhr2.status === 201) { // Got a success response from server!
+
+        // update cache
+        DBHelper.fetchOneRestaurant(id, (error, restaurant) => {
+          self.restaurant = restaurant;
+          if (!restaurant) {
+            console.error(error);
+            return;
+          }
+          updateRestaurantTitleHTML(fav);
+        });
+
+      } else { // Oops!. Got an error from server.
+  
+        sendPostponedFavMsg(id, fav);
+      }
+    }
+
+    xhr.onerror = () => {
+      
+        sendPostponedFavMsg(id, fav);
+    }
+  } 
 }
