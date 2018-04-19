@@ -383,6 +383,7 @@ function sendPostponedFavMsg(id, fav) {
                   }})
 
     .then(function(response) {
+      console.log('Updating updateRestaurantTitleHTML fav: ' + fav);
       updateRestaurantTitleHTML(fav);
      
     }).catch(function(error) {
@@ -391,17 +392,16 @@ function sendPostponedFavMsg(id, fav) {
 }
 
 /**
- * Submit the review form.
+ * Submit the review.
  */
-function submit_form(nm, rat, msg, fav) {
-  let xhr = new XMLHttpRequest();
-  const id = getParameterByName('id');
+function submit_review(id, nm, rat, msg) {
 
+  let xhr = new XMLHttpRequest();
   xhr.open('POST', DBHelper.DATABASE_SUBMIT_REVIEW);
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   
   xhr.onload = () => {
-    if (xhr.status === 201) { // Got a success response from server!
+    if (xhr.status === 200 || xhr.status === 201) { // Got a success response from server!
 
       var jsonResponse = JSON.parse(xhr.responseText);
       addReviewsHTML(jsonResponse);
@@ -423,36 +423,60 @@ function submit_form(nm, rat, msg, fav) {
   }
 
   xhr.send(JSON.stringify({restaurant_id: id, name: nm, rating: rat, comments: msg}));
+}
+
+/**
+ * Submit the favorite.
+ */
+function submit_favorite(id, fav) {
+
+  let xhr = new XMLHttpRequest();
+
+  xhr.open('POST', DBHelper.setDatabaseUrlOneFavorite(id, fav));
+  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  
+  xhr.onload = () => {
+    if (xhr.status === 200 || xhr.status === 201) { // Got a success response from server!
+
+      // update cache
+      DBHelper.fetchOneRestaurant(id, (error, restaurant) => {
+        self.restaurant = restaurant;
+
+        if (!restaurant) {
+          console.error(error);
+          return;
+        }
+
+        updateRestaurantTitleHTML(fav);
+      });
+
+    } else { // Oops!. Got an error from server.
+
+      sendPostponedFavMsg(id, fav);
+    }
+  }
+
+  xhr.onerror = () => {
+    
+      sendPostponedFavMsg(id, fav);
+  }
+
+  xhr.send();
+}
+
+/**
+ * Submit the review form.
+ */
+function submit_form(nm, rat, msg, fav) {
+
+  const id = getParameterByName('id');
+
+  submit_review(id, nm, rat, msg);
 
   var curFav = (self.restaurant.is_favorite === 'true' ? true : false);
+
   if (fav != curFav) {
-    let xhr2 = new XMLHttpRequest();
 
-    xhr2.open('POST', DBHelper.setDatabaseUrlOneFavorite(id, fav));
-    xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    
-    xhr2.onload = () => {
-      if (xhr2.status === 201) { // Got a success response from server!
-
-        // update cache
-        DBHelper.fetchOneRestaurant(id, (error, restaurant) => {
-          self.restaurant = restaurant;
-          if (!restaurant) {
-            console.error(error);
-            return;
-          }
-          updateRestaurantTitleHTML(fav);
-        });
-
-      } else { // Oops!. Got an error from server.
-  
-        sendPostponedFavMsg(id, fav);
-      }
-    }
-
-    xhr.onerror = () => {
-      
-        sendPostponedFavMsg(id, fav);
-    }
-  } 
+    submit_favorite(id, fav);
+  }
 }
