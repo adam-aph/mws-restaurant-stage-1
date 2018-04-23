@@ -60,7 +60,8 @@ self.addEventListener('activate', function (event) {
 
 self.addEventListener('fetch', function(event) {
 
-  if (event.request.method != 'GET') {
+  if (event.request.method != 'GET' ||
+     (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin')) {
     return;
   }
 
@@ -73,41 +74,6 @@ self.addEventListener('fetch', function(event) {
     }
   }
 
-/*
-  if (requestUrl.pathname.indexOf('/reviews/') != -1) {  // cache all reviews = '/reviews/?restaurant_id=id'
-
-    event.respondWith(
-      caches.open(name).then(function(cache) {
-        return fetch(event.request).then(function(response) {
-          cache.put(event.request, response.clone());
-          return response;
-        }).catch(function() {
-          return cache.match(event.request);
-        });
-      })
-    );
-
-    return;
-  }
-
-  if (requestUrl.pathname.indexOf('/restaurants') != -1) {
-
-    event.respondWith( getDBCachedMessage(requestUrl.pathname).then(function(resp) {
-
-        return resp || fetch(event.request).then(function(respScnd) {
-
-            putDBCachedMessage(requestUrl.pathname, respScnd.clone());
-            return respScnd;
-
-        }).catch(function(e) {
-            console.log(e);
-        });
-      })
-    );
-
-    return;
-  }
-*/
 
   // all json
   if (requestUrl.origin.indexOf('localhost:1337') != -1) {

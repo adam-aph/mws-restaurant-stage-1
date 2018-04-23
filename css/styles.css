@@ -223,6 +223,11 @@ nav h1 a {
   margin: 0;
   max-width: 100%;
   min-width: 100%;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+#restaurants-list .restaurant-img[data-src] {
+  opacity: 0;
 }
 #restaurants-list li h3 {
   color: purple;
