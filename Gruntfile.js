@@ -48,12 +48,42 @@ module.exports = function(grunt) {
       },
     },
 
+    /* js minify */
+    uglify: {
+       my_target1: {
+          files: {
+             'sw.min.js': ['sw.js'],
+          }
+       },
+       my_target2: {
+          files: {
+             'dest/main.js': ['js/dbhelper.js', 'js/main.js'],
+          }
+       },
+       my_target3: {
+          files: {
+             'dest/restaurant_info.js': ['js/dbhelper.js', 'js/restaurant_info.js'],
+          }
+       }
+    },
+
+    /* css minify */
+    cssmin: {
+      my_target: {
+        src: 'css/styles.css',
+        dest: 'dest/styles.css'
+      }
+    },
+
   });
 
   grunt.loadNpmTasks('grunt-responsive-images');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-mkdir');
-  grunt.registerTask('default', ['clean', 'mkdir', 'copy', 'responsive_images']);
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-uglify-es');
 
+  grunt.registerTask('default', ['clean', 'mkdir', 'copy', 'responsive_images']);
+  grunt.registerTask('minify', ['cssmin', 'uglify']);
 };

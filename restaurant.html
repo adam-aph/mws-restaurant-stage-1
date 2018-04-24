@@ -6,10 +6,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <!-- Normalize.css for better cross-browser consistency -->
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="preload" href="css/styles.css" as="style">
-  <link rel="stylesheet" href="css/styles.css" type="text/css">
-  <link rel="preload" href="js/dbhelper.js" as="script">
-  <link rel="preload" href="js/restaurant_info.js" as="script">
+  <link rel="preload" href="dest/styles.css" as="style">
+  <link rel="stylesheet" href="dest/styles.css" type="text/css">
+  <link rel="preload" href="dest/restaurant_info.js" as="script">
   <title>Restaurant Info</title>  
 </head>
 
@@ -83,10 +82,8 @@
   </div>
 
   <!-- Beginning scripts -->
-  <!-- Database helpers -->
-  <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
-  <script type="text/javascript" src="js/restaurant_info.js"></script>
+  <script type="text/javascript" src="dest/restaurant_info.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
 
@@ -114,7 +111,7 @@
       if ('serviceWorker' in navigator) {
         // Recommended to register onLoad
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js', {scope: './'});
+          navigator.serviceWorker.register('./sw.min.js', {scope: './'});
         });
       }
 

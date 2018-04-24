@@ -4,11 +4,10 @@ var name = 'restaurants-simple-cache-v2',
       './',
       './index.html',
       './restaurant.html',
-      './sw.js',
-      './css/styles.css',
-      './js/dbhelper.js',
-      './js/main.js',      
-      './js/restaurant_info.js'
+      './sw.min.js',
+      './dest/styles.css',
+      './dest/main.js',      
+      './dest/restaurant_info.js'
     ];
 
 

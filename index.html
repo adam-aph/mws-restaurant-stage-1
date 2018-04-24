@@ -6,11 +6,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="preload" href="css/styles.css" as="style">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preload" href="dest/styles.css" as="style">
+  <link rel="stylesheet" href="dest/styles.css">
   <link rel="manifest" href="/manifest.json">
-  <link rel="preload" href="js/dbhelper.js" as="script">
-  <link rel="preload" href="js/main.js" as="script">
+  <link rel="preload" href="dest/main.js" as="script">
   <title>Restaurant Reviews</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -59,8 +58,7 @@
       </section>
     </main>
 
-    <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
-    <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
+    <script type="application/javascript" charset="utf-8" src="dest/main.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
 
     <script>
@@ -126,7 +124,7 @@
         if ('serviceWorker' in navigator) {
           // Recommended to register onLoad
           window.addEventListener('load', function() {
-            navigator.serviceWorker.register('/sw.js', {scope: './'});
+            navigator.serviceWorker.register('./sw.min.js', {scope: './'});
           });
         }
 

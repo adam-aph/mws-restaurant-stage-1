@@ -272,7 +272,7 @@ nav h1 a {
 }
 .inside #map-container {
   position: relative;
-  padding-bottom: 20%; // This is the aspect ratio
+  padding-bottom: 20%;
   height: 0;
   overflow: hidden;
 }
