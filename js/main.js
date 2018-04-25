@@ -10,14 +10,22 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
+  updateRestaurants();
 });
 
 /**
  * Fix images.
  */
-
 window.addEventListener('load', function() {
   [].forEach.call(document.querySelectorAll('.restaurant-img[data-src]'), function(img) {
+    img.setAttribute('src', img.getAttribute('data-src'));
+    img.onload = function() {
+      img.removeAttribute('data-src');
+    };
+  });    
+}, false);
+window.addEventListener('load', function() {
+  [].forEach.call(document.querySelectorAll('img[data-src]'), function(img) {
     img.setAttribute('src', img.getAttribute('data-src'));
     img.onload = function() {
       img.removeAttribute('data-src');
@@ -86,6 +94,16 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 }
 
 /**
+ * Swap map.
+ */
+swapMap = () => {
+  //    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
+
+  document.getElementById('map-static').style.display = "none";
+  document.getElementById('map').style.display = "inline";
+}
+
+/**
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
@@ -98,16 +116,10 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
-  // Remove focus for the map
-  self.map.addListener("tilesloaded", function(){
-      var anchors = document.querySelectorAll('#map a');
-
-      [].forEach.call(anchors, function(item) {
-          item.setAttribute('tabindex','-1');
-      });
-  });
-
-  updateRestaurants();
+  
+  document.getElementById('map-static').style.display = "none";
+  document.getElementById('map').style.display = "inline";
+  addMarkersToMap();
 }
 
 /**
@@ -201,6 +213,11 @@ createRestaurantHTML = (restaurant) => {
  * Add markers for current restaurants to the map.
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
+
+  if (self.map == null) {
+    return;
+  }
+
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
