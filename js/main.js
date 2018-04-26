@@ -17,22 +17,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * Fix images.
  */
 window.addEventListener('load', function() {
-  [].forEach.call(document.querySelectorAll('.restaurant-img[data-src]'), function(img) {
-    img.setAttribute('src', img.getAttribute('data-src'));
-    img.onload = function() {
-      img.removeAttribute('data-src');
-    };
-  });    
-}, false);
-window.addEventListener('load', function() {
   [].forEach.call(document.querySelectorAll('img[data-src]'), function(img) {
     img.setAttribute('src', img.getAttribute('data-src'));
     img.onload = function() {
       img.removeAttribute('data-src');
     };
-  });    
+  });
 }, false);
-
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -180,8 +171,8 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
 
-  //image.src = DBHelper.imageSrcUrlForRestaurant(restaurant);
   image.setAttribute("data-src", DBHelper.imageSrcUrlForRestaurant(restaurant));
+  //image.setAttribute("src", DBHelper.imageSrcUrlForRestaurant(restaurant));
   image.alt = DBHelper.imageAltDescForRestaurant(restaurant);
   li.append(image);
 
