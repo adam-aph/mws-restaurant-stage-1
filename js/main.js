@@ -10,20 +10,25 @@ var markers = []
 document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
-  updateRestaurants();
+  updateRestaurants(true);
 });
 
 /**
  * Fix images.
+ * It puts this code at the end of the active browser event queue without any more delay.
  */
-window.addEventListener('load', function() {
+setTimeout(function() {
+//window.addEventListener('load', function() {
+// 'load' event for unknown reason doesn't work here - this handler is missing all
+//  dynamic added <img> tags for restaurant list
   [].forEach.call(document.querySelectorAll('img[data-src]'), function(img) {
     img.setAttribute('src', img.getAttribute('data-src'));
     img.onload = function() {
       img.removeAttribute('data-src');
     };
   });
-}, false);
+//}, false);
+}, 50);
 
 /**
  * Fetch all neighborhoods and set their HTML.
@@ -88,11 +93,11 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Swap map.
  */
 swapMap = () => {
-  //    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap"></script>
-
-  document.getElementById('map-static').style.display = "none";
-  document.getElementById('map').style.display = "inline";
-}
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAq5NHLNEo4kP8bRAwMQe_VnOJb6eZxnkM&libraries=places&callback=initMap";
+  document.body.appendChild(script);
+ }
 
 /**
  * Initialize Google map, called from HTML.
@@ -116,7 +121,7 @@ window.initMap = () => {
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = () => {
+updateRestaurants = (lazy) => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -131,7 +136,11 @@ updateRestaurants = () => {
       console.error(error);
     } else {
       resetRestaurants(restaurants);
-      fillRestaurantsHTML();
+      fillRestaurantsHTML(lazy);
+    
+      if (self.map == null && lazy == false) {
+        swapMap();
+      } 
     }
   })
 }
@@ -154,25 +163,32 @@ resetRestaurants = (restaurants) => {
 /**
  * Create all restaurants HTML and add them to the webpage.
  */
-fillRestaurantsHTML = (restaurants = self.restaurants) => {
+fillRestaurantsHTML = (lazy, restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
-    ul.append(createRestaurantHTML(restaurant));
+    ul.append(createRestaurantHTML(lazy, restaurant));
   });
-  addMarkersToMap();
+
+  if (self.map != null) {
+    addMarkersToMap();
+  } 
 }
 
 /**
  * Create restaurant HTML.
  */
-createRestaurantHTML = (restaurant) => {
+createRestaurantHTML = (lazy, restaurant) => {
   const li = document.createElement('li');
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
 
-  image.setAttribute("data-src", DBHelper.imageSrcUrlForRestaurant(restaurant));
-  //image.setAttribute("src", DBHelper.imageSrcUrlForRestaurant(restaurant));
+  if (lazy == true) {
+    image.setAttribute("data-src", DBHelper.imageSrcUrlForRestaurant(restaurant));
+  } else {
+    image.setAttribute("src", DBHelper.imageSrcUrlForRestaurant(restaurant));
+  }
+
   image.alt = DBHelper.imageAltDescForRestaurant(restaurant);
   li.append(image);
 
@@ -206,6 +222,7 @@ createRestaurantHTML = (restaurant) => {
 addMarkersToMap = (restaurants = self.restaurants) => {
 
   if (self.map == null) {
+    swapMap();
     return;
   }
 

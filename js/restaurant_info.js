@@ -15,6 +15,7 @@ window.initMap = () => {
         scrollwheel: false
       });
       fillBreadcrumb();
+      document.getElementById('map').style.display = "inline";
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
       // Remove focus for the map
       self.map.addListener("tilesloaded", function(){

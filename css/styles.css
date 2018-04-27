@@ -295,6 +295,7 @@ nav h1 a {
   height: 100%;
   width: 100%;
   background-color: #ccc;
+  display: block;
 }
 .inside #restaurant-name {
   background-color: darkblue;
