@@ -28,7 +28,7 @@ setTimeout(function() {
     };
   });
 //}, false);
-}, 50);
+}, 100);
 
 /**
  * Fetch all neighborhoods and set their HTML.
