@@ -64,19 +64,19 @@
 
   <div id="reviewform" role="form" aria-label="review form" aria-hidden="true">
     <div id="popupReview">
-      <img id="close-img" src="icons/close.png" onclick="div_hide()" role="button" aria-label="close button">
+      <img id="close-img" src="icons/close.png" onclick="div_hide()" role="button" aria-label="close button" tabindex="0">
       <form action="#" id="form" method="post" name="form">   
         <h2>Write Review</h2>
           <div class="form-group">
-            <input id="name" name="name" placeholder="Name" type="text">
+            <input id="name" name="name" placeholder="Name" type="text" tabindex="0">
             <div class="fav-checkbox form-control-inline">
               <label for="favorite">Favorite?</label>
-              <input id="favorite" name="favorite" type="checkbox">
+              <input id="favorite" name="favorite" type="checkbox" tabindex="0">
             </div>            
           </div>
-          <input id="rating" name="rating" placeholder="Rating (1-6)" type="text">
-          <textarea id="msg" name="review" placeholder="Review"></textarea>
-        <a href="javascript:%20check_empty()" id="submit" role="button" aria-label="submit button">Send</a>
+          <input id="rating" name="rating" placeholder="Rating (1-6)" type="text" tabindex="0">
+          <textarea id="msg" name="review" placeholder="Review" tabindex="0"></textarea>
+        <a href="javascript:%20check_empty()" id="submit" role="button" aria-label="submit button" tabindex="0">Send</a>
       </form>
     </div>
   </div>
@@ -92,7 +92,7 @@
       var nextFocus = document.querySelector('#restaurant-name');
 
       prevfocus.onkeydown = function(event) {
-          if (event.keyCode == 9 ) {  // TAB
+          if (event.keyCode == 9 && !event.shiftKey) {  // TAB
             event.preventDefault();
             nextFocus.focus(); 
             return false;
@@ -105,6 +105,35 @@
             prevfocus.focus(); 
             return false;
           }
+        return true;
+      };
+
+      var prevfocusDialog = document.querySelector('#submit');
+      var nextFocusDialog = document.querySelector('#close-img');
+
+      prevfocusDialog.onkeydown = function(event) {
+          if (event.keyCode == 9 && !event.shiftKey) {  // TAB
+            event.preventDefault();
+            nextFocusDialog.focus(); 
+            return false;
+          }
+        return true;
+      };
+      nextFocusDialog.onkeydown = function(event) {
+          if (event.keyCode == 9 && event.shiftKey) {  // Shift+TAB
+            event.preventDefault();
+            prevfocusDialog.focus(); 
+            return false;
+          }
+        return true;
+      };
+
+      document.onkeydown = function(event) {
+          if (event.keyCode == 27) {      // escape key maps to keycode `27`
+            event.preventDefault();
+            document.getElementById('reviewform').style.display = "none";
+            return false;
+          }      
         return true;
       };
 

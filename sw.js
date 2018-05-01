@@ -156,6 +156,10 @@ self.addEventListener('sync', event => {
   // do not delete for testing purposes
   // delete syncStore[event.tag]
 
+    console.log('=== Syncing ===');
+    console.log('===   url: ' + savedEvent.data.url);
+    console.log('===   options: ' + JSON.stringify(savedEvent.data.options));
+
     event.waitUntil(fetch(savedEvent.data.url, savedEvent.data.options).then(function(response) {  
       return response.json();
 

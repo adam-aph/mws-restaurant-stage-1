@@ -294,6 +294,7 @@ function div_show() {
   document.getElementById('rating').value = "";
   document.getElementById('msg').value = "";
   document.getElementById('reviewform').style.display = "block";
+  document.getElementById("name").focus();
 }
 
 /**
@@ -364,6 +365,7 @@ function sendPostponedMsg(id, nm, rat, msg) {
                   body: {restaurant_id: id, name: nm, rating: rat, comments: msg}}})
 
     .then(function(response) {
+      console.log('Updating updateReviewsHTMLOffline response: ' + JSON.stringify(response));
       updateReviewsHTMLOffline(nm, rat, msg, uid, response.updatedAt);
      
     }).catch(function(error) {
@@ -384,7 +386,7 @@ function sendPostponedFavMsg(id, fav) {
                   }})
 
     .then(function(response) {
-      console.log('Updating updateRestaurantTitleHTML fav: ' + fav);
+      console.log('Updating updateRestaurantTitleHTML response: ' + JSON.stringify(response));
       updateRestaurantTitleHTML(fav);
      
     }).catch(function(error) {
